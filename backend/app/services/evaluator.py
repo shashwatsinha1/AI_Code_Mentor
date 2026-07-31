@@ -1,4 +1,5 @@
 import time
+
 from sqlalchemy import distinct, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -50,9 +51,7 @@ class ProblemEvaluatorService:
             actual_norm = normalize_output(exec_res.stdout)
             expected_norm = normalize_output(tc.expected_stdout)
             is_match = (
-                exec_res.exit_code == 0
-                and not exec_res.timed_out
-                and actual_norm == expected_norm
+                exec_res.exit_code == 0 and not exec_res.timed_out and actual_norm == expected_norm
             )
 
             if is_match:
@@ -175,7 +174,7 @@ class ProblemEvaluatorService:
 
         for _, prob in rows:
             pass  # populate topic stats based on unique solved problem tags
-        
+
         # Calculate topic solved count per tag
         solved_prob_ids = {p_id for p_id, _ in solved_rows}
         for sub, prob in rows:
@@ -191,9 +190,7 @@ class ProblemEvaluatorService:
             att = stats["attempted"]
             sol = stats["solved"]
             rate = round((sol / att) * 100, 1) if att > 0 else 0.0
-            topic_stats.append(
-                TopicStat(tag=tag, attempted=att, solved=sol, pass_rate=rate)
-            )
+            topic_stats.append(TopicStat(tag=tag, attempted=att, solved=sol, pass_rate=rate))
             if rate < 60.0 or sol == 0:
                 weak_topics.append(tag)
 

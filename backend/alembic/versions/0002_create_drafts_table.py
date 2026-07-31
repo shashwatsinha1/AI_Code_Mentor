@@ -4,6 +4,7 @@ Revision ID: 0002_create_drafts_table
 Revises: 0001_create_auth_tables
 Create Date: 2026-07-29
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa

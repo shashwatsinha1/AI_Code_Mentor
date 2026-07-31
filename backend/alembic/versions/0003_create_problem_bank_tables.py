@@ -4,6 +4,7 @@ Revision ID: 0003_create_problem_bank_tables
 Revises: 0002_create_drafts_table
 Create Date: 2026-07-30
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa

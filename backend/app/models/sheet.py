@@ -15,9 +15,7 @@ class Sheet(Base):
     title: Mapped[str] = mapped_column(String(160))
     description: Mapped[str] = mapped_column(Text)
     author: Mapped[str] = mapped_column(String(80), default="Striver / Fraz")
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     items: Mapped[list["SheetItem"]] = relationship(
         back_populates="sheet",

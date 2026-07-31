@@ -14,6 +14,7 @@ class AIMentorService:
     @property
     def api_key(self) -> str | None:
         from app.core.config import get_settings
+
         current_settings = get_settings()
         if current_settings.openai_api_key:
             return current_settings.openai_api_key.get_secret_value()
@@ -22,6 +23,7 @@ class AIMentorService:
     @property
     def model(self) -> str:
         from app.core.config import get_settings
+
         return get_settings().openai_model
 
     async def explain(self, payload: MentorCodeRequest) -> MentorResponse:
@@ -117,13 +119,15 @@ class AIMentorService:
     def _local_explanation(self, payload: MentorCodeRequest) -> str:
         problem = (payload.problem_statement or "").strip()
         code = payload.code.strip()
-        
+
         # Check if the user is asking a conceptual question in the Problem Context box or code comment
         concept_explanation = self._get_concept_explanation(problem, payload.language)
         if not concept_explanation:
             todo_match = re.search(r"solve\s+([A-Za-z0-9\s]+)", code, re.IGNORECASE)
             if todo_match:
-                concept_explanation = self._get_concept_explanation(todo_match.group(1), payload.language)
+                concept_explanation = self._get_concept_explanation(
+                    todo_match.group(1), payload.language
+                )
 
         if concept_explanation:
             return concept_explanation
@@ -132,7 +136,7 @@ class AIMentorService:
         functions = sum(1 for line in lines if line.lstrip().startswith("def "))
         loops = sum(1 for line in lines if any(token in line for token in ("for ", "while ")))
         branches = sum(1 for line in lines if line.lstrip().startswith(("if ", "elif ", "else:")))
-        
+
         prob_title = "Given Problem"
         if payload.problem_statement:
             prob_title = payload.problem_statement.splitlines()[0].strip()
@@ -163,7 +167,9 @@ class AIMentorService:
             return None
 
         # 1. Specific Problem Titles (Highest Priority)
-        if any(kw in q for kw in ("median", "two sorted arrays", "combined sorted arrays", "log(min")):
+        if any(
+            kw in q for kw in ("median", "two sorted arrays", "combined sorted arrays", "log(min")
+        ):
             return (
                 "### 🔍 Approach: Median of Two Sorted Arrays\n\n"
                 "To find the median of two sorted arrays `nums1` (size N) and `nums2` (size M) in **`O(log(min(N,M)))`** time, use **Binary Search on Partitioning**.\n\n"
@@ -380,9 +386,20 @@ class AIMentorService:
         # Detect pattern keywords from problem and code
         is_two_sum = "two sum" in problem.lower() or "target" in problem.lower()
         is_sliding_window = "substring" in problem.lower() or "window" in problem.lower()
-        is_two_pointer = "two pointers" in problem.lower() or "pair" in problem.lower() or "triplet" in problem.lower()
-        is_dp = "dp" in problem.lower() or "subsequence" in problem.lower() or "ways" in problem.lower() or "coins" in problem.lower()
-        is_tree_graph = "island" in problem.lower() or "tree" in problem.lower() or "graph" in problem.lower()
+        is_two_pointer = (
+            "two pointers" in problem.lower()
+            or "pair" in problem.lower()
+            or "triplet" in problem.lower()
+        )
+        is_dp = (
+            "dp" in problem.lower()
+            or "subsequence" in problem.lower()
+            or "ways" in problem.lower()
+            or "coins" in problem.lower()
+        )
+        is_tree_graph = (
+            "island" in problem.lower() or "tree" in problem.lower() or "graph" in problem.lower()
+        )
 
         if level == 1:
             return (
@@ -420,11 +437,11 @@ class AIMentorService:
             )
         else:
             return (
-                f"### 💡 Hint Level 4: Edge Cases & Validation Checklist\n\n"
-                f"- ⚠️ **Empty / Single Element Input:** Does your code handle `n = 0` or `n = 1` without out-of-bounds errors?\n"
-                f"- ⚠️ **Negative Values & Zeros:** Test with inputs containing negative numbers or zero.\n"
-                f"- ⚠️ **Duplicate Values:** Ensure duplicate elements don't cause infinite loops or incorrect counts.\n"
-                f"- ⚠️ **Large Inputs (Time Limit Exceeded):** Check if your time complexity fits within 1 second (~10^7 operations)."
+                "### 💡 Hint Level 4: Edge Cases & Validation Checklist\n\n"
+                "- ⚠️ **Empty / Single Element Input:** Does your code handle `n = 0` or `n = 1` without out-of-bounds errors?\n"
+                "- ⚠️ **Negative Values & Zeros:** Test with inputs containing negative numbers or zero.\n"
+                "- ⚠️ **Duplicate Values:** Ensure duplicate elements don't cause infinite loops or incorrect counts.\n"
+                "- ⚠️ **Large Inputs (Time Limit Exceeded):** Check if your time complexity fits within 1 second (~10^7 operations)."
             )
 
     def _local_bug_report(self, payload: MentorCodeRequest) -> str:
@@ -432,11 +449,15 @@ class AIMentorService:
         code = payload.code
 
         if payload.exit_code not in (None, 0):
-            issues.append(f"The latest run exited with code {payload.exit_code}. Check stderr first.")
+            issues.append(
+                f"The latest run exited with code {payload.exit_code}. Check stderr first."
+            )
         if payload.stderr:
             issues.append(f"Runtime error detected in stderr:\n```\n{payload.stderr.strip()}\n```")
         if "while True" in code and "break" not in code:
-            issues.append("A `while True` loop without an explicit `break` condition may cause a Time Limit Exceeded (infinite loop).")
+            issues.append(
+                "A `while True` loop without an explicit `break` condition may cause a Time Limit Exceeded (infinite loop)."
+            )
         if code.count("(") != code.count(")"):
             issues.append("Unbalanced parentheses detected `(` vs `)`.")
         if code.count("[") != code.count("]"):
@@ -447,16 +468,16 @@ class AIMentorService:
             issues.append("No code submitted yet.")
 
         if not issues:
-            issues.append("No static syntax or unbalanced bracket issues found. Try running edge-case inputs to catch logic bugs.")
+            issues.append(
+                "No static syntax or unbalanced bracket issues found. Try running edge-case inputs to catch logic bugs."
+            )
 
         return "### 🐛 Bug Detection Report\n\n" + "\n".join(f"- {issue}" for issue in issues)
 
     def _local_complexity(self, payload: MentorCodeRequest) -> str:
         code = payload.code
         loop_count = sum(
-            1
-            for line in code.splitlines()
-            if any(token in line for token in ("for ", "while "))
+            1 for line in code.splitlines() if any(token in line for token in ("for ", "while "))
         )
         if loop_count == 0:
             time_est = "O(1) constant time (or O(N) depending on built-in library methods)"
@@ -467,8 +488,23 @@ class AIMentorService:
         else:
             time_est = f"O(N^{loop_count}) polynomial time due to {loop_count} nested loop levels"
 
-        has_map = any(kw in code for kw in ("dict()", "set()", "HashMap", "HashSet", "unordered_map", "unordered_set", "{}"))
-        space_est = "O(N) linear space (allocating extra map/set/array storage)" if has_map else "O(1) auxiliary space"
+        has_map = any(
+            kw in code
+            for kw in (
+                "dict()",
+                "set()",
+                "HashMap",
+                "HashSet",
+                "unordered_map",
+                "unordered_set",
+                "{}",
+            )
+        )
+        space_est = (
+            "O(N) linear space (allocating extra map/set/array storage)"
+            if has_map
+            else "O(1) auxiliary space"
+        )
 
         return (
             f"### ⏱️ Complexity Analysis\n\n"
@@ -481,23 +517,36 @@ class AIMentorService:
         code = payload.code
         suggestions: list[str] = []
         loop_count = sum(
-            1
-            for line in code.splitlines()
-            if any(token in line for token in ("for ", "while "))
+            1 for line in code.splitlines() if any(token in line for token in ("for ", "while "))
         )
 
         if not code.strip():
             suggestions.append("Write a first working solution before optimizing.")
         if loop_count >= 2:
-            suggestions.append("Replace nested loops with a **Hash Map / Dictionary** or **Two Pointers** to reduce complexity from O(N^2) to O(N).")
+            suggestions.append(
+                "Replace nested loops with a **Hash Map / Dictionary** or **Two Pointers** to reduce complexity from O(N^2) to O(N)."
+            )
         if payload.language == "python" and ".count(" in code:
-            suggestions.append("`list.count()` inside a loop runs in O(N^2). Precompute frequencies using `collections.Counter`.")
-        if payload.language == "python" and " in " in code and "set(" not in code and "dict" not in code:
-            suggestions.append("Checking membership `x in list` takes O(N). Convert candidate collections to a `set` for O(1) average lookup.")
+            suggestions.append(
+                "`list.count()` inside a loop runs in O(N^2). Precompute frequencies using `collections.Counter`."
+            )
+        if (
+            payload.language == "python"
+            and " in " in code
+            and "set(" not in code
+            and "dict" not in code
+        ):
+            suggestions.append(
+                "Checking membership `x in list` takes O(N). Convert candidate collections to a `set` for O(1) average lookup."
+            )
         if "sort(" in code or ".sort" in code:
-            suggestions.append("Sorting takes O(N log N). Ensure the sorted order enables Two Pointers or Binary Search.")
+            suggestions.append(
+                "Sorting takes O(N log N). Ensure the sorted order enables Two Pointers or Binary Search."
+            )
 
-        suggestions.append("Benchmark execution runtime before and after refactoring bottleneck operations.")
+        suggestions.append(
+            "Benchmark execution runtime before and after refactoring bottleneck operations."
+        )
 
         return "Optimization guidance:\n" + "\n".join(f"- {s}" for s in suggestions)
 

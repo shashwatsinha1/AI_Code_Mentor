@@ -23,9 +23,7 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
     openai_api_key: SecretStr | None = Field(default=None, alias="OPENAI_API_KEY")
     openai_model: str = Field(default="gpt-4o-mini", alias="OPENAI_MODEL")
-    openai_base_url: str = Field(
-        default="https://api.openai.com/v1", alias="OPENAI_BASE_URL"
-    )
+    openai_base_url: str = Field(default="https://api.openai.com/v1", alias="OPENAI_BASE_URL")
     judge0_api_url: str = Field(default="https://ce.judge0.com", alias="JUDGE0_API_URL")
     judge0_auth_token: SecretStr | None = Field(default=None, alias="JUDGE0_AUTH_TOKEN")
     judge0_rapidapi_key: SecretStr | None = Field(default=None, alias="JUDGE0_RAPIDAPI_KEY")

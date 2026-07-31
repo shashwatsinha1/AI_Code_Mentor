@@ -1,4 +1,4 @@
-from app.services.ai_mentor import AIMentorService, ai_mentor_service
+from app.services.ai_mentor import AIMentorService
 
 
 async def _login(client) -> dict[str, str]:
@@ -111,7 +111,9 @@ async def test_code_with_curly_braces_renders_without_formatting_error(client, m
     assert "result" in payload
 
 
-async def test_explain_median_of_two_sorted_arrays_returns_specific_dsa_approach(client, monkeypatch):
+async def test_explain_median_of_two_sorted_arrays_returns_specific_dsa_approach(
+    client, monkeypatch
+):
     monkeypatch.setattr(AIMentorService, "api_key", property(lambda self: None))
     tokens = await _login(client)
     response = await client.post(
@@ -129,6 +131,3 @@ async def test_explain_median_of_two_sorted_arrays_returns_specific_dsa_approach
     assert "O(log(min(N,M)))" in result or "O(log(min(N, M)))" in result
     assert "Binary Search on Partitioning" in result or "Binary Search" in result
     assert "Understanding Arrays (Data Structures)" not in result
-
-
-

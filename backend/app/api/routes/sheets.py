@@ -62,9 +62,7 @@ async def get_sheet_detail(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> SheetDetailResponse:
     sheet_res = await db.execute(
-        select(Sheet)
-        .options(selectinload(Sheet.items))
-        .where(Sheet.slug == slug)
+        select(Sheet).options(selectinload(Sheet.items)).where(Sheet.slug == slug)
     )
     sheet = sheet_res.scalar_one_or_none()
     if sheet is None:
@@ -141,9 +139,7 @@ async def toggle_sheet_item_completion(
     )
     item = item_res.scalar_one_or_none()
     if item is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Sheet item not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sheet item not found")
 
     prog_res = await db.execute(
         select(UserSheetProgress).where(

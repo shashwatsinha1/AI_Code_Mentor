@@ -4,6 +4,7 @@ Revision ID: 0001_create_auth_tables
 Revises:
 Create Date: 2026-07-28
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa

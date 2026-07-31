@@ -47,6 +47,4 @@ async def submit_problem(
     problem = await get_problem_by_slug(db, slug)
     if problem is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Problem not found")
-    return await problem_evaluator_service.evaluate_and_submit(
-        db, current_user, problem, payload
-    )
+    return await problem_evaluator_service.evaluate_and_submit(db, current_user, problem, payload)
