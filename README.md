@@ -1,21 +1,3 @@
-# AI Code Mentor — AI-Powered Coding Environment
-
-AI Code Mentor is a full-stack AI-assisted coding environment
-designed to combine code editing, code execution, debugging,
-complexity analysis, and AI-based programming assistance in one
-workspace.
-
-The system separates three major responsibilities:
-
-    Code Editing
-          ↓
-    Code Execution
-          ↓
-    AI Analysis
-
-The frontend provides the interactive coding workspace,
-while the FastAPI backend acts as the orchestration layer
-between the frontend, database, AI provider, and Judge0.
 
 # AI Code Mentor — AI-Powered Coding Environment
 
