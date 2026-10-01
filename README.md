@@ -1,86 +1,216 @@
-# AI Code Mentor
+# AI Code Mentor — AI-Powered Coding Environment
 
-Phase 3 scaffold for the AI Code Mentor app.
+AI Code Mentor is a full-stack AI-assisted coding environment
+designed to combine code editing, code execution, debugging,
+complexity analysis, and AI-based programming assistance in one
+workspace.
 
-## Stack
+The system separates three major responsibilities:
 
-- Frontend: React, Vite, Tailwind CSS, Monaco Editor, Chart.js
-- Backend: FastAPI, SQLAlchemy async, Alembic
-- Data: SQLite locally by default, PostgreSQL/Redis later when deployment is revisited
-- Auth: JWT access tokens with rotating refresh tokens
+    Code Editing
+          ↓
+    Code Execution
+          ↓
+    AI Analysis
 
-## Run locally
+The frontend provides the interactive coding workspace,
+while the FastAPI backend acts as the orchestration layer
+between the frontend, database, AI provider, and Judge0.
 
-Start the backend:
+# AI Code Mentor — AI-Powered Coding Environment
 
-```bash
-cd backend
-python -m pip install -e ".[dev]"
-uvicorn app.main:app --reload
-```
+AI Code Mentor is a full-stack AI-assisted coding environment
+designed to combine code editing, code execution, debugging,
+complexity analysis, and AI-based programming assistance in one
+workspace.
 
-Start the frontend in another terminal:
+The system separates three major responsibilities:
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+    Code Editing
+          ↓
+    Code Execution
+          ↓
+    AI Analysis
 
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
-- API docs: http://localhost:8000/docs
+The frontend provides the interactive coding workspace,
+while the FastAPI backend acts as the orchestration layer
+between the frontend, database, AI provider, and Judge0.
 
-## Backend checks
+## Why I Built This
 
-```bash
-cd backend
-python -m pip install -e ".[dev]"
-ruff check .
-pytest
-```
+Most coding platforms provide either an editor/compiler
+or an AI assistant.
 
-## Frontend checks
+I wanted to understand how these systems could be combined
+into a single developer workflow.
 
-```bash
-cd frontend
-npm install
-npm run lint
-npm run build
-```
+The project was therefore designed around four questions:
 
-## Phase 1 Exit Criteria
+- How should code drafts be persisted?
+- How should untrusted code be executed safely?
+- How should AI functionality be exposed through APIs?
+- How should AI reasoning be separated from actual execution?
 
-- Register via `/auth/signup`
-- Log in via `/auth/login`
-- Rotate refresh tokens via `/auth/refresh`
-- Hit protected `/users/me`
-- Use the React signup, login, and profile screens
-- Run with local backend and frontend dev commands
+This led to the following architecture:
 
-## Phase 2 Workspace
+Editor
+   ↓
+Backend
+   ├── Authentication
+   ├── Draft Management
+   ├── AI Analysis
+   └── Code Execution
+          ↓
+       Judge0
 
-- Protected workspace: http://localhost:5173/workspace
-- Draft API: `GET /drafts/{language}` and `PUT /drafts`
-- Execute API: `POST /execute`
+       
+The important architectural distinction is:
 
-Execution uses Judge0 through the backend, keeping untrusted code away from the app server.
-Set `JUDGE0_API_URL` if you want to point at a hosted or self-hosted Judge0 instance. The
-default is `https://ce.judge0.com`.
+AI prediction != actual program execution
 
-Optional Judge0 settings:
+The LLM can reason about whether a program appears
+correct, but it is not the source of truth for runtime
+behavior.
 
-- `JUDGE0_AUTH_TOKEN`
-- `JUDGE0_RAPIDAPI_KEY`
-- `JUDGE0_RAPIDAPI_HOST`
-- `JUDGE0_TIMEOUT_SECONDS`
+Judge0 therefore acts as the execution layer, while
+the AI provider acts as the reasoning layer.
 
-## Phase 3 AI Mentor
+The important architectural distinction is:
 
-- Explain code: `POST /explain`
-- Generate staged hints: `POST /hint`
-- Detect bugs: `POST /detect-bugs`
-- Analyze complexity: `POST /complexity`
+AI prediction != actual program execution
 
-Set `OPENAI_API_KEY` to use the OpenAI-backed mentor. Without a key, the backend returns local
-heuristic responses so the UI remains usable during development.
+The LLM can reason about whether a program appears
+correct, but it is not the source of truth for runtime
+behavior.
+
+Judge0 therefore acts as the execution layer, while
+the AI provider acts as the reasoning layer.
+
+
+## AI Mentor Architecture
+
+The AI layer is divided into task-specific operations:
+
+/explain
+/hint
+/detect-bugs
+/complexity
+
+Each operation represents a different developer workflow.
+
+                  AI Mentor
+                      │
+       ┌──────────────┼──────────────┐
+       │              │              │
+       ▼              ▼              ▼
+    Explain         Hint        Bug Detection
+       │              │              │
+       └──────────────┼──────────────┘
+                      ▼
+                 AI Service
+                      │
+                      ▼
+                AI Provider
+
+
+
+# Data Layer
+
+The backend uses SQLAlchemy as the ORM layer.
+
+Local development uses SQLite:
+
+sqlite+aiosqlite:///./dev.db
+
+The application also includes PostgreSQL support through
+asyncpg.
+
+The database layer is responsible for persistent
+application state rather than transient AI responses.
+
+
+
+# Data Layer
+
+The backend uses SQLAlchemy as the ORM layer.
+
+Local development uses SQLite:
+
+sqlite+aiosqlite:///./dev.db
+
+The application also includes PostgreSQL support through
+asyncpg.
+
+The database layer is responsible for persistent
+application state rather than transient AI responses.
+
+
+# Authentication Flow
+
+Signup
+  ↓
+Validate request
+  ↓
+Hash password
+  ↓
+Store user
+  ↓
+Login
+  ↓
+Verify password
+  ↓
+Generate access token
+  ↓
+Generate refresh token
+  ↓
+Authenticated API requests
+
+
+
+AI_Code_Mentor/
+├── backend/
+│   ├── app/
+│   │   ├── core/
+│   │   ├── models/
+│   │   ├── schemas/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   └── main.py
+│   ├── alembic/
+│   ├── tests/
+│   ├── pyproject.toml
+│   └── .env.example
+│
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   └── ...
+│
+└── .github/
+    └── workflows/
+        └── ci.yml
+
+
+
+# What This Project Demonstrates
+
+Full-Stack Development
+        ↓
+React + FastAPI
+        ↓
+REST API Design
+        ↓
+Authentication
+        ↓
+Async Database Access
+        ↓
+External API Integration
+        ↓
+Code Execution
+        ↓
+AI-assisted Code Analysis
+        ↓
+Error Handling
+        ↓
+Testing + CI
