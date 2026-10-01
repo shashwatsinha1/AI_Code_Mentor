@@ -1,30 +1,26 @@
-
 # AI Code Mentor — AI-Powered Coding Environment
 
-AI Code Mentor is a full-stack AI-assisted coding environment
-designed to combine code editing, code execution, debugging,
-complexity analysis, and AI-based programming assistance in one
-workspace.
+AI Code Mentor is a full-stack AI-assisted coding environment designed to combine code editing, code execution, debugging, complexity analysis, and AI-based programming assistance in one workspace.
 
 The system separates three major responsibilities:
 
-    Code Editing
-          ↓
-    Code Execution
-          ↓
-    AI Analysis
+```text
+Code Editing
+     ↓
+Code Execution
+     ↓
+AI Analysis
+```
 
-The frontend provides the interactive coding workspace,
-while the FastAPI backend acts as the orchestration layer
-between the frontend, database, AI provider, and Judge0.
+The frontend provides the interactive coding workspace, while the FastAPI backend acts as the orchestration layer between the frontend, database, AI provider, and Judge0.
+
+---
 
 ## Why I Built This
 
-Most coding platforms provide either an editor/compiler
-or an AI assistant.
+Most coding platforms provide either an editor/compiler or an AI assistant.
 
-I wanted to understand how these systems could be combined
-into a single developer workflow.
+I wanted to understand how these systems could be combined into a single developer workflow.
 
 The project was therefore designed around four questions:
 
@@ -35,6 +31,7 @@ The project was therefore designed around four questions:
 
 This led to the following architecture:
 
+```text
 Editor
    ↓
 Backend
@@ -44,91 +41,70 @@ Backend
    └── Code Execution
           ↓
        Judge0
-
-       
-The important architectural distinction is:
-
-AI prediction != actual program execution
-
-The LLM can reason about whether a program appears
-correct, but it is not the source of truth for runtime
-behavior.
-
-Judge0 therefore acts as the execution layer, while
-the AI provider acts as the reasoning layer.
+```
 
 The important architectural distinction is:
 
+```text
 AI prediction != actual program execution
+```
 
-The LLM can reason about whether a program appears
-correct, but it is not the source of truth for runtime
-behavior.
+The LLM can reason about whether a program appears correct, but it is not the source of truth for runtime behavior.
 
-Judge0 therefore acts as the execution layer, while
-the AI provider acts as the reasoning layer.
+Judge0 therefore acts as the execution layer, while the AI provider acts as the reasoning layer.
 
+---
 
 ## AI Mentor Architecture
 
 The AI layer is divided into task-specific operations:
 
+```text
 /explain
 /hint
 /detect-bugs
 /complexity
+```
 
 Each operation represents a different developer workflow.
 
-                  AI Mentor
-                      │
-       ┌──────────────┼──────────────┐
-       │              │              │
-       ▼              ▼              ▼
-    Explain         Hint        Bug Detection
-       │              │              │
-       └──────────────┼──────────────┘
-                      ▼
-                 AI Service
-                      │
-                      ▼
-                AI Provider
+```text
+                 AI Mentor
+                     │
+      ┌──────────────┼──────────────┐
+      │              │              │
+      ▼              ▼              ▼
+   Explain         Hint        Bug Detection
+      │              │              │
+      └──────────────┼──────────────┘
+                     ▼
+                AI Service
+                     │
+                     ▼
+               AI Provider
+```
 
+---
 
-
-# Data Layer
-
-The backend uses SQLAlchemy as the ORM layer.
-
-Local development uses SQLite:
-
-sqlite+aiosqlite:///./dev.db
-
-The application also includes PostgreSQL support through
-asyncpg.
-
-The database layer is responsible for persistent
-application state rather than transient AI responses.
-
-
-
-# Data Layer
+## Data Layer
 
 The backend uses SQLAlchemy as the ORM layer.
 
 Local development uses SQLite:
 
+```text
 sqlite+aiosqlite:///./dev.db
+```
 
-The application also includes PostgreSQL support through
-asyncpg.
+The application also includes PostgreSQL support through `asyncpg`.
 
-The database layer is responsible for persistent
-application state rather than transient AI responses.
+The database layer is responsible for persistent application state rather than transient AI responses.
 
+---
 
-# Authentication Flow
+## Authentication Flow
 
+```text
 Signup
   ↓
 Validate request
@@ -146,9 +122,13 @@ Generate access token
 Generate refresh token
   ↓
 Authenticated API requests
+```
 
+---
 
+## Project Structure
 
+```text
 AI_Code_Mentor/
 ├── backend/
 │   ├── app/
@@ -172,11 +152,13 @@ AI_Code_Mentor/
 └── .github/
     └── workflows/
         └── ci.yml
+```
 
+---
 
+## What This Project Demonstrates
 
-# What This Project Demonstrates
-
+```text
 Full-Stack Development
         ↓
 React + FastAPI
@@ -195,4 +177,5 @@ AI-assisted Code Analysis
         ↓
 Error Handling
         ↓
-Testing + CI ek ache se proper readme file bana kr do sara content ek sth
+Testing + CI
+```
